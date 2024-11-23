@@ -2,7 +2,7 @@
   "pokemon-generations": [
     {
       "generation-num": 1,
-      "generation-name": "Pokemon: Red & Blue",
+      "generation-name": "Pokémon: Red and Blue",
       "generation-map": "Kanto",
       "starters": [
         {
@@ -24,7 +24,7 @@
     },
     {
       "generation-num": 2,
-      "generation-name": "Pokemon: Gold & Silver",
+      "generation-name": "Pokémon: Gold and Silver",
       "generation-map": "Johto",
       "starters": [
         {
@@ -46,7 +46,7 @@
     },
     {
       "generation-num": 3,
-      "generation-name": "Pokemon: Ruby & Sapphire",
+      "generation-name": "Pokémon: Ruby and Sapphire",
       "generation-map": "Hoenn",
       "starters": [
         {
@@ -68,7 +68,7 @@
     },
     {
       "generation-num": 4,
-      "generation-name": "Pokemon: Diamond & Pearl",
+      "generation-name": "Pokémon: Diamond and Pearl",
       "generation-map": "Sinnoh",
       "starters": [
         {
@@ -90,7 +90,7 @@
     },
     {
       "generation-num": 5,
-      "generation-name": "Pokemon: Black & White",
+      "generation-name": "Pokémon: Black and White",
       "generation-map": "Unova",
       "starters": [
         {

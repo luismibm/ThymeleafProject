@@ -60,6 +60,8 @@ public class Main {
             writeHtml(htmlDetails, fileName);
         }
 
+        generateRSS(pokemonData, "src/main/resources/generated/rss.xml", name, description);
+
     }
 
     public static void writeHtml(String htmlContent, String fileName) {
@@ -70,7 +72,45 @@ public class Main {
             writer.write(htmlContent);
             writer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("ERROR: writeHtml");
+        }
+
+    }
+
+    public static void generateRSS(PokemonData pokemonData, String path, String name, String description) {
+
+        StringBuilder rssContent = new StringBuilder();
+        rssContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
+        rssContent.append("<rss version=\"2.0\">\n");
+        rssContent.append("<channel>\n");
+        rssContent.append("<title>").append(name).append("</title>\n");
+        rssContent.append("<link>src/main/resources/generated/index.html</link>\n");
+        rssContent.append("<description>").append(description).append("</description>\n");
+
+        for (Generation generation : pokemonData.getPokemonGenerations()) {
+            rssContent.append("<item>\n");
+            rssContent.append("<title>").append(generation.getGenerationName()).append("</title>\n");
+            rssContent.append("<link>src/main/resources/generated/details_").append(generation.getGenerationNum()).append(".html</link>\n");
+            rssContent.append("<description>Starters: ");
+            for (Starter starter : generation.getStarters()) {
+                rssContent.append(starter.getStarterName()).append(" (").append(starter.getStarterType()).append("), ");
+            }
+            rssContent.setLength(rssContent.length() - 2); // Remove last comma and space
+            rssContent.append("</description>\n");
+            rssContent.append("</item>\n");
+        }
+
+        rssContent.append("</channel>\n");
+        rssContent.append("</rss>");
+
+        try {
+            FileWriter fileWriter = new FileWriter(path);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(rssContent.toString());
+            bufferedWriter.close();
+            fileWriter.close();
+        } catch (IOException e) {
+            System.err.println("ERROR: generateRSS");
         }
 
     }
