@@ -18,40 +18,38 @@ public class Main {
 
     public static void main(String[] args) {
 
+        // https://belief-driven-design.com/thymeleaf-part-1-basics-3a1d9/
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setPrefix("templates/");
         templateResolver.setSuffix(".html");
 
+        TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
+
         Properties properties = new Properties();
-        try {
-            InputStreamReader input = new InputStreamReader(new FileInputStream("src/main/resources/config.ini"));
+        try (InputStreamReader input = new InputStreamReader(new FileInputStream("src/main/resources/config.ini"))) {
             properties.load(input);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        TemplateEngine templateEngine = new TemplateEngine();
-        templateEngine.setTemplateResolver(templateResolver);
-
         String name = properties.getProperty("name");
         String description = properties.getProperty("description");
 
-        Context context = new Context();
-
         ObjectMapper objectMapper = new ObjectMapper();
-        PokemonData pokemonData = null;
+        PokemonData pokemonData;
         try {
             pokemonData = objectMapper.readValue(new File("src/main/resources/pokemon-generations.json"), PokemonData.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
+        Context context = new Context();
         context.setVariable("generations", pokemonData.pokemonGenerations());
         context.setVariable("name", name);
         context.setVariable("description", description);
 
         String htmlContent = templateEngine.process("templateGenerations", context);
-
         writeHtml(htmlContent, "src/main/resources/generated/index.html");
 
         for (Generation pokemonGeneration : pokemonData.pokemonGenerations()) {
