@@ -1,6 +1,10 @@
 package com.luismi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.luismi.model.Generation;
+import com.luismi.model.PokemonData;
+import com.luismi.model.Starter;
+
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.context.Context;
@@ -42,7 +46,7 @@ public class Main {
             throw new RuntimeException(e);
         }
 
-        context.setVariable("generations", pokemonData.getPokemonGenerations());
+        context.setVariable("generations", pokemonData.pokemonGenerations());
         context.setVariable("name", name);
         context.setVariable("description", description);
 
@@ -50,13 +54,13 @@ public class Main {
 
         writeHtml(htmlContent, "src/main/resources/generated/index.html");
 
-        for (Generation pokemonGeneration : pokemonData.getPokemonGenerations()) {
+        for (Generation pokemonGeneration : pokemonData.pokemonGenerations()) {
             Context detailsContext = new Context();
-            detailsContext.setVariable("starters", pokemonGeneration.getStarters());
+            detailsContext.setVariable("starters", pokemonGeneration.starters());
             detailsContext.setVariable("name", name);
             detailsContext.setVariable("description", description);
             String htmlDetails = templateEngine.process("templateStarters", detailsContext);
-            String fileName = "src/main/resources/generated/details_" + pokemonGeneration.getGenerationNum() + ".html";
+            String fileName = "src/main/resources/generated/details_" + pokemonGeneration.generationNum() + ".html";
             writeHtml(htmlDetails, fileName);
         }
 
@@ -87,13 +91,13 @@ public class Main {
         rssContent.append("<link>src/main/resources/generated/index.html</link>\n");
         rssContent.append("<description>").append(description).append("</description>\n");
 
-        for (Generation generation : pokemonData.getPokemonGenerations()) {
+        for (Generation generation : pokemonData.pokemonGenerations()) {
             rssContent.append("<item>\n");
-            rssContent.append("<title>").append(generation.getGenerationName()).append("</title>\n");
-            rssContent.append("<link>src/main/resources/generated/details_").append(generation.getGenerationNum()).append(".html</link>\n");
+            rssContent.append("<title>").append(generation.generationName()).append("</title>\n");
+            rssContent.append("<link>src/main/resources/generated/details_").append(generation.generationNum()).append(".html</link>\n");
             rssContent.append("<description>Starters: ");
-            for (Starter starter : generation.getStarters()) {
-                rssContent.append(starter.getStarterName()).append(" (").append(starter.getStarterType()).append("), ");
+            for (Starter starter : generation.starters()) {
+                rssContent.append(starter.starterName()).append(" (").append(starter.starterType()).append("), ");
             }
             rssContent.setLength(rssContent.length() - 2); // Remove last comma and space
             rssContent.append("</description>\n");
