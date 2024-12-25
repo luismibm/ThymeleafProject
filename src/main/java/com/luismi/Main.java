@@ -42,6 +42,7 @@ public class Main {
         String description = properties.getProperty("description");
 
         // https://github.com/everit-org/json-schema
+        PokemonData pokemonData;
         try (InputStream schemaStream = new FileInputStream("src/main/resources/pokemon-generations-schema.json");
              InputStream jsonStream = new FileInputStream("src/main/resources/pokemon-generations.json")) {
 
@@ -51,15 +52,10 @@ public class Main {
             Schema schema = SchemaLoader.load(jsonSchema);
             schema.validate(jsonData);
 
-        } catch (IOException | ValidationException e) {
-            throw new RuntimeException(e);
-        }
+            ObjectMapper objectMapper = new ObjectMapper();
+            pokemonData = objectMapper.readValue(jsonData.toString(), PokemonData.class);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        PokemonData pokemonData;
-        try {
-            pokemonData = objectMapper.readValue(new File("src/main/resources/pokemon-generations.json"), PokemonData.class);
-        } catch (IOException e) {
+        } catch (IOException | ValidationException e) {
             throw new RuntimeException(e);
         }
 
