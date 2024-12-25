@@ -5,6 +5,11 @@ import com.luismi.model.Generation;
 import com.luismi.model.PokemonData;
 import com.luismi.model.Starter;
 
+import org.everit.json.schema.Schema;
+import org.everit.json.schema.ValidationException;
+import org.everit.json.schema.loader.SchemaLoader;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.context.Context;
@@ -35,6 +40,20 @@ public class Main {
 
         String name = properties.getProperty("name");
         String description = properties.getProperty("description");
+
+        // https://github.com/everit-org/json-schema
+        try (InputStream schemaStream = new FileInputStream("src/main/resources/pokemon-generations-schema.json");
+             InputStream jsonStream = new FileInputStream("src/main/resources/pokemon-generations.json")) {
+
+            JSONObject jsonSchema = new JSONObject(new JSONTokener(schemaStream));
+            JSONObject jsonData = new JSONObject(new JSONTokener(jsonStream));
+
+            Schema schema = SchemaLoader.load(jsonSchema);
+            schema.validate(jsonData);
+
+        } catch (IOException | ValidationException e) {
+            throw new RuntimeException(e);
+        }
 
         ObjectMapper objectMapper = new ObjectMapper();
         PokemonData pokemonData;
