@@ -5,6 +5,8 @@ import com.luismi.model.Generation;
 import com.luismi.model.PokemonData;
 import com.luismi.model.Starter;
 
+import com.rometools.rome.feed.synd.*;
+import com.rometools.rome.io.SyndFeedOutput;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.ValidationException;
 import org.everit.json.schema.loader.SchemaLoader;
@@ -17,6 +19,8 @@ import org.thymeleaf.context.Context;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class Main {
@@ -94,39 +98,38 @@ public class Main {
 
     }
 
+    // https://www.youtube.com/watch?v=6HNUqDL-pI8
+    // https://www.blackslate.io/articles/create-rss-feeds-in-java-using-rome
     public static void generateRSS(PokemonData pokemonData, String path, String name, String description) {
+        SyndFeed feed = new SyndFeedImpl();
+        feed.setFeedType("rss_2.0");
+        feed.setTitle(name);
+        feed.setLink("src/main/resources/generated/index.html");
+        feed.setDescription(description);
 
-        StringBuilder rssContent = new StringBuilder();
-        rssContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
-        rssContent.append("<rss version=\"2.0\">\n");
-        rssContent.append("<channel>\n");
-        rssContent.append("<title>").append(name).append("</title>\n");
-        rssContent.append("<link>src/main/resources/generated/index.html</link>\n");
-        rssContent.append("<description>").append(description).append("</description>\n");
-
+        List<SyndEntry> entries = new ArrayList<>();
         for (Generation generation : pokemonData.pokemonGenerations()) {
-            rssContent.append("<item>\n");
-            rssContent.append("<title>").append(generation.generationName()).append("</title>\n");
-            rssContent.append("<link>src/main/resources/generated/details_").append(generation.generationNum()).append(".html</link>\n");
-            rssContent.append("<description>Starters: ");
-            for (Starter starter : generation.starters()) {
-                rssContent.append(starter.starterName()).append(" (").append(starter.starterType()).append("), ");
-            }
-            rssContent.setLength(rssContent.length() - 2); // Remove last comma and space
-            rssContent.append("</description>\n");
-            rssContent.append("</item>\n");
-        }
+            SyndEntry entry = new SyndEntryImpl();
+            entry.setTitle(generation.generationName());
+            entry.setLink("src/main/resources/generated/details_" + generation.generationNum() + ".html");
 
-        rssContent.append("</channel>\n");
-        rssContent.append("</rss>");
+            SyndContent content = new SyndContentImpl();
+            StringBuilder startersDescription = new StringBuilder("Starters: ");
+            for (Starter starter : generation.starters()) {
+                startersDescription.append(starter.starterName()).append(" (").append(starter.starterType()).append("), ");
+            }
+            startersDescription.setLength(startersDescription.length() - 2); // Remove last comma and space
+            content.setValue(startersDescription.toString());
+            entry.setDescription(content);
+
+            entries.add(entry);
+        }
+        feed.setEntries(entries);
 
         try {
-            FileWriter fileWriter = new FileWriter(path);
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write(rssContent.toString());
-            bufferedWriter.close();
-            fileWriter.close();
-        } catch (IOException e) {
+            SyndFeedOutput output = new SyndFeedOutput();
+            output.output(feed, new FileWriter(path));
+        } catch (Exception e) {
             System.err.println("ERROR: generateRSS");
         }
 

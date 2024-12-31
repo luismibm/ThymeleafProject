@@ -1,6 +1,6 @@
 # Pokemon Generations & Starters
 
-> Luis Miguel Benítez, 2º DAM
+Luis Miguel Benítez, 2º DAM
 
 ## Índice
 
@@ -14,8 +14,8 @@
 
 ## Descripción del proyecto
 
-Este proyecto genera una página web que muestra las generaciones de Pokémon y sus respectivos Pokémon iniciales.
-Utiliza archivos JSON para almacenar los datos de las generaciones y los iniciales, y archivos INI para la configuración.
+Este proyecto genera páginas web estáticas que muestra las generaciones de Pokémon y sus respectivos Pokémon iniciales.  
+Utiliza archivos JSON para almacenar y validar los datos de las generaciones y los iniciales, y archivos INI para la configuración.
 Las plantillas Thymeleaf se utilizan para generar las páginas HTML.
 
 ## Ficheros de entrada
@@ -195,29 +195,67 @@ description = This webpage shows Pokémon Generations and its respective starter
 
 ### Librerías
 
-- **Spring Boot Starter Web**: Utilizada para crear aplicaciones web basadas en Spring.
-- **Spring Boot Starter Thymeleaf**: Utilizada para integrar Thymeleaf como motor de plantillas.
-- **Jackson Databind**: Utilizada para la serialización y deserialización de objetos JSON.
+- **Thymeleaf** es utilizado como motor de plantillas para la creación de los archivos HTML.
+- **JSON Schema Validator** es utilizado para validar que el archivo json con el contenido sigue el esquema del archivo json que define la estructura qeu deben de presentar los datos.
+- **Rome** es utilizado para la creación del RSS.
 
 ### Clases
 
-- `PokemonData` representa los datos de las generaciones de Pokémon.
-- `Generation` representa cada generación de Pokémon.
-- `Starter` representa cada Pokémon inicial.
+Las clases se pueden encontrar dentro de la carpeta `model`.
+
+- `PokemonData.java` representa los datos de las generaciones de Pokémon.
+- `Generation.java` representa cada generación de Pokémon.
+- `Starter.java` representa cada Pokémon inicial.
 
 ### Dependencias
 
-- `org.springframework.boot:spring-boot-starter-web`
-- `org.springframework.boot:spring-boot-starter-thymeleaf`
-- `com.fasterxml.jackson.core:jackson-databind`
-- `org.springframework.boot:spring-boot-starter-test`
+        <dependency>
+            <groupId>org.thymeleaf</groupId>
+            <artifactId>thymeleaf</artifactId>
+            <version>3.1.2.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.17.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.17.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.17.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.32</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.erosb</groupId>
+            <artifactId>everit-json-schema</artifactId>
+            <version>1.14.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.rometools</groupId>
+            <artifactId>rome</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.9</version>
+        </dependency>
 
 ## Plantillas Thymeleaf
 
 Thymeleaf es un motor de plantillas para Java que permite crear archivos HTML.
 En este proyecto existen dos plantillas utilizadas para la generación de páginas estáticas:
 
-`templateGenerations.html` para la página principal que muestra la lista de generaciones Pokémon:
+Para la página principal (`index.html`) Thymeleaf hace uso de `templateGenerations.html` para crear la lista de generaciones Pokémon:
 ```
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
@@ -256,7 +294,7 @@ En este proyecto existen dos plantillas utilizadas para la generación de págin
 </html>
 ```
 
-`templateStarters.html` generará una página para los Pokémon iniciales por cada generación:
+Para cada una de las generaciones, Thymeleaf hace uso de `templateStarters.html` y genera una página para los Pokémon iniciales de cada generación:
 ```
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
@@ -306,30 +344,15 @@ La página para los iniciales de cada generación queda así:
 ## Problemas resueltos y no resueltos
 
 ### Problemas resueltos
-
-el siguiente mensaje se mostraba en la consola al generar las páginas:
-```
-SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
-SLF4J: Defaulting to no-operation (NOP) logger implementation
-SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
-```
-Esto deja de suceder imoortando la siguiente dependencia:
-```
-<dependency>
-    <groupId>ch.qos.logback</groupId>
-    <artifactId>logback-classic</artifactId>
-    <version>1.2.6</version>
-</dependency>
-```
+- Schema Validation: El programa ahora comprueba si el contenido de `pokemon-generations.json` sigue la estructura de `pokemon-generations-schema.json`.
+- RSS Feed: El archivo RSS ahora se crea usando una librería específica para la creación de RSS.
 
 ### Problemas por resolver
-
-La salida de `rss.xml` no es identada.
+En este momento el programa no tiene ningún problema por resolver.
 
 ## Recursos y bibliografía
 
-https://aules.edu.gva.es/fp/pluginfile.php/7965809/mod_resource/content/4/Exemple%20Thymeleaf.pdf
-https://es.wikipedia.org/wiki/Thymeleaf
-https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html
-https://github.com/martinwojtus/tutorials
-https://es.wikipedia.org/wiki/RSS
+https://belief-driven-design.com/thymeleaf-part-1-basics-3a1d9/  
+https://github.com/everit-org/json-schema  
+https://www.youtube.com/watch?v=6HNUqDL-pI8  
+https://www.blackslate.io/articles/create-rss-feeds-in-java-using-rome
